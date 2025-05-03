@@ -24,23 +24,17 @@ export class HistogramEqualizationService {
 
       const { buffer: raw, width, height } = await convertToGreyscale(imagePath);
 
-      const histogram = new Array(256).fill(0);
-      for (let i = 0; i < raw.length; i++) {
-      }
-
-      const cdf = new Array(256).fill(0);
-      cdf[0] = 0;
-      for (let i = 1; i < 256; i++) {
-      }
-
+      const histogram = Array(256).fill(0);
+      raw.forEach(pixel => histogram[pixel]++);
+      const cdf = histogram.reduce((acc, val, i) => [...acc, acc[i - 1] + val || val], []);
+      const cdfMin = cdf.find(val => val > 0);
       const totalPixels = raw.length;
-      const L = 256;
 
       const equalized = Buffer.alloc(raw.length);
 
       for (let i = 0; i < raw.length; i++) {
         const originalIntensity = raw[i];
-        const newIntensity = 0;
+        const newIntensity = Math.round(((cdf[originalIntensity] - cdfMin) / (totalPixels - cdfMin)) * 255);
         equalized[i] = newIntensity;
       }
 

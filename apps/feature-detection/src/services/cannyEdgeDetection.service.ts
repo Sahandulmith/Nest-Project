@@ -50,3 +50,38 @@ export class CannyEdgeDetectionService {
     }
   }
 }
+
+export function cannyEdgeDetection(image: number[][][]): number[][][] {
+  const gradients = calculateGradients(image); // Sobel operator
+  const suppressed = nonMaxSuppression(gradients.magnitude, gradients.direction, gradients.width, gradients.height);
+  return hysteresisThresholding(suppressed, 50, 150); // Threshold values
+}
+function hysteresisThresholding(suppressed: Float32Array<ArrayBufferLike>, arg1: number, arg2: number): number[][][] {
+  throw new Error('Function not implemented.');
+}
+
+function calculateGradients(image: number[][][]) {
+  // Example implementation of Sobel operator to calculate gradients
+  const width = image[0].length;
+  const height = image.length;
+  const magnitude = new Float32Array(width * height);
+  const direction = new Float32Array(width * height);
+
+  // Perform gradient calculations (this is a placeholder logic)
+  for (let y = 1; y < height - 1; y++) {
+    for (let x = 1; x < width - 1; x++) {
+      const gx = -image[y - 1][x - 1][0] + image[y - 1][x + 1][0]
+               - 2 * image[y][x - 1][0] + 2 * image[y][x + 1][0]
+               - image[y + 1][x - 1][0] + image[y + 1][x + 1][0];
+      const gy = -image[y - 1][x - 1][0] - 2 * image[y - 1][x][0] - image[y - 1][x + 1][0]
+               + image[y + 1][x - 1][0] + 2 * image[y + 1][x][0] + image[y + 1][x + 1][0];
+
+      const index = y * width + x;
+      magnitude[index] = Math.sqrt(gx * gx + gy * gy);
+      direction[index] = Math.atan2(gy, gx);
+    }
+  }
+
+  return { magnitude, direction, width, height };
+}
+

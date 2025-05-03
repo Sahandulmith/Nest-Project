@@ -114,3 +114,21 @@ export class FloodFillService {
     }
   }
 }
+
+export function floodFill(image: number[][][], x: number, y: number, newColor: number[]): number[][][] {
+  const [oldColor] = image[y][x];
+  if (JSON.stringify(oldColor) === JSON.stringify(newColor)) return image;
+
+  const stack = [[x, y]];
+  while (stack.length) {
+    const popped = stack.pop();
+    if (!popped) continue;
+    const [cx, cy] = popped;
+    if (cx < 0 || cy < 0 || cx >= image[0].length || cy >= image.length) continue;
+    if (JSON.stringify(image[cy][cx]) !== JSON.stringify(oldColor)) continue;
+
+    image[cy][cx] = newColor;
+    stack.push([cx + 1, cy], [cx - 1, cy], [cx, cy + 1], [cx, cy - 1]);
+  }
+  return image;
+}

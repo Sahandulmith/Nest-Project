@@ -3,6 +3,7 @@ import * as sharp from 'sharp';
 import { MessagePattern } from '@nestjs/microservices';
 import * as fs from 'fs';
 import * as path from 'path';
+import { applyConvolution } from 'apps/common/utils/convolution';
 
 @Injectable()
 export class SharpenService {
@@ -84,4 +85,39 @@ export class SharpenService {
       };
     }
   }
+}
+
+export function sharpenImage(image: number[][][]): number[][][] {
+  const kernel = [
+    [0, -1, 0],
+    [-1, 5, -1],
+    [0, -1, 0],
+  ];
+  const height = image.length;
+  const width = image[0].length;
+  const channels = image[0][0].length;
+  const buffer = Buffer.alloc(height * width * channels);
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      for (let c = 0; c < channels; c++) {
+        const pixelIndex = (y * width + x) * channels + c;
+        buffer[pixelIndex] = image[y][x][c];
+      }
+    }
+  }
+  const resultBuffer = applyConvolution(buffer, width, height, channels, kernel);
+  const result: number[][][] = [];
+  for (let y = 0; y < height; y++) {
+    const row: number[][] = [];
+    for (let x = 0; x < width; x++) {
+      const pixel: number[] = [];
+      for (let c = 0; c < channels; c++) {
+        const pixelIndex = (y * width + x) * channels + c;
+        pixel.push(resultBuffer[pixelIndex]);
+      }
+      row.push(pixel);
+    }
+    result.push(row);
+  }
+  return result;
 }

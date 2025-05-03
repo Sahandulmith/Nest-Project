@@ -6,6 +6,12 @@ import { applyConvolution } from '../../../common/utils/convolution';
 import * as fs from 'fs';
 import * as path from 'path';
 
+export function applyNegative(image: number[][][]): number[][][] {
+  return image.map(row =>
+    row.map(pixel => pixel.map(channel => 255 - channel)) // Invert each channel
+  );
+}
+
 @Injectable()
 export class NegativeService {
   // Kernel for negative effect

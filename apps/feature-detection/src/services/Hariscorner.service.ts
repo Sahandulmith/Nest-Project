@@ -175,3 +175,21 @@ export class HarrisSharpService {
     return { corners: corners.slice(0, 20), outputPath: outPath };
   }
 }
+
+export function harrisCornerDetection(image: number[][][]): number[][][] {
+  const gradients = calculateGradients(image);
+  const response = calculateHarrisResponse(gradients);
+  return markCorners(response, 0.01); // Threshold for corner detection
+}
+function calculateGradients(image: number[][][]) {
+  throw new Error('Function not implemented.');
+}
+
+function calculateHarrisResponse(gradients: void) {
+  throw new Error('Function not implemented.');
+}
+
+function markCorners(response: void, arg1: number): number[][][] {
+  throw new Error('Function not implemented.');
+}
+
